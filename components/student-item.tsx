@@ -4,7 +4,6 @@ import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { Student } from "../data/students";
 import React from "react";
 
-// TypeScript interface — defines exactly what props this component accepts
 interface StudentItemProps {
     student: Student;
     onPress: (student: Student) => void;
@@ -13,26 +12,32 @@ interface StudentItemProps {
 
 export default function StudentItem({ student, onPress, isSelected }: StudentItemProps) {
     return (
-        <TouchableOpacity style={[styles.row, isSelected && styles.rowSelected]} onPress={() => onPress(student)} activeOpacity={0.7}>
-            {/* Avatar image */}
-            <Image source={{ uri: student.avatarUrl }} style={styles.avatar} resizeMode="cover" />
-
-            {/* Text content */}
+        <TouchableOpacity 
+            style={[styles.row, isSelected && styles.rowSelected]} 
+            onPress={() => onPress(student)} 
+            activeOpacity={0.7}
+            accessible={true}
+            accessibilityRole="button"
+            accessibilityLabel={`${student.name}, ${student.department}`}
+            accessibilityHint="Tap to view full profile"
+        >
+            <Image 
+                source={{ uri: student.avatarUrl }} 
+                style={styles.avatar} 
+                resizeMode="cover" 
+                accessibilityLabel={`Profile photo of ${student.name}`}
+            />
             <View style={styles.info}>
-                <Text style={styles.name} numberOfLines={1}>
-                    {student.name}
-                </Text>
-                <Text style={styles.department} numberOfLines={1}>
-                    {student.department}
-                </Text>
+                <Text style={styles.name} numberOfLines={1}>{student.name}</Text>
+                <Text style={styles.department} numberOfLines={1}>{student.department}</Text>
                 <Text style={styles.id}>ID: {student.studentId}</Text>
             </View>
-
-            {/* Chevron indicator */}
             <Text style={styles.chevron}>{isSelected ? "▲" : "▶"}</Text>
         </TouchableOpacity>
     );
 }
+
+
 
 const styles = StyleSheet.create({
     row: {
