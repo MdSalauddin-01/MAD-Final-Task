@@ -1,19 +1,27 @@
-// app/(tabs)/statistics.tsx
-
-import React from "react";
-import { useMemo } from "react";
-import { ScrollView, StyleSheet, Text, View } from "react-native";
+import React, { useMemo } from "react";
+import { ScrollView, StyleSheet, Text, View, ActivityIndicator } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import StatBar from "../../components/stat-bar";
 import { useStudents } from "../../context/students-context";
+import ErrorScreen from "../../components/error-screen";
 
 const BAR_COLOURS = ["#0D9488", "#185FA5", "#7C3AED", "#F59E0B", "#EF4444", "#059669"];
 
 export default function Statistics() {
-    const { students } = useStudents();
+    const { students, isLoading, error } = useStudents();
 
-    // Derived value 1: department breakdown
-    // Only recomputes when students changes.
+    if (isLoading) {
+        return (
+            <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+                <ActivityIndicator size="large" color="#0D9488" />
+            </View>
+        );
+    }
+
+    if (error) {
+        return <ErrorScreen message={error} />;
+    }
+
     const deptStats = useMemo(() => {
         const counts: Record<string, number> = {};
         students.forEach((s) => {
@@ -24,7 +32,6 @@ export default function Statistics() {
             .sort((a, b) => b.count - a.count);
     }, [students]);
 
-    // Derived value 2: top skills ranking
     const topSkills = useMemo(() => {
         const counts: Record<string, number> = {};
         students.forEach((s) => {
